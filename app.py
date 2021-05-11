@@ -23,18 +23,6 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
-# association table 
-# product_ingredient = db.Table('product_ingredient',Base.metadata,
-#     db.Column('product_id', 
-#                 db.Integer, 
-#                 db.ForeignKey('product.id')
-#                 ),
-#     db.Column('ingredient_id', 
-#                 db.Integer, 
-#                 db.ForeignKey('ingredient.id')
-#                 )
-#             )
-
 class Product(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -42,7 +30,6 @@ class Product(db.Model):
     description = db.Column(db.String)
     image_url = db.Column(db.String)
     ingredients = db.Column(db.Text)
-    # ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'), nullable=False)
 
                                                 
     # Constructor
@@ -127,23 +114,6 @@ def get_product(id):
         db.session.commit()
         return {"message": f"Product {product.name} successfully deleted."}
 
-# def get_product(id):
-#     if not id.isnumeric(): 
-#         product = Product.query.filter_by(name = id).first()
-        
-#         if product is None:
-#             abort(404)
-            
-#         response = {"id": product.id, 
-#                     "name": product.name, 
-#                     "description": product.description,
-#                     "image_url": product.image_url, 
-#                     "ingredients": product.ingredients
-#                     }
-#         return {"product": response}
-#         product = Product.query.get_or_404(id)
-
-
 
 # INGREDIENTS DB 
 class Ingredient(db.Model):
@@ -156,14 +126,7 @@ class Ingredient(db.Model):
     safety = db.Column(db.String)
     image_url = db.Column(db.String)
     quick_facts = db.Column(db.String)
-
-    # product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-
-    # products = db.relationship('Product', 
-    #                             secondary=product_ingredient, 
-    #                             backref=db.backref('ingredient',lazy = 'dynamic'),
-    #                             lazy='dynamic')
-
+    
     # Constructor
     def __init__(self, name, alt_names, description, purpose, safety, image_url, quick_facts):
         self.name = name
@@ -225,19 +188,6 @@ def ingredient():
         except:
             return jsonify({"error": "m"})
 
-# @app.route('/ingredients/<name>', methods=['GET'])
-# def get_ingredient_by_name(name):
-#     ingredient = Ingredient.query.filter_by(name = name).first()
-#     response = {"id": ingredient.id, 
-#                 "name": ingredient.name, 
-#                 "description": ingredient.description, 
-#                 "purpose" : ingredient.purpose, 
-#                 "safety": ingredient.safety,
-#                 "image_url": ingredient.image_url, 
-#                 "quick_facts": ingredient.quick_facts
-#                 }
-#     return {"ingredient": response}
-
 # view single item 
 @app.route('/ingredients/<id>', methods=['GET', 'PUT', 'DELETE'])
 def get_ingredient(id):
@@ -285,16 +235,8 @@ def get_ingredient(id):
         db.session.commit()
         return {"message": f"Ingredient: {ingredient.name} successfully updated"}
     
-    # elif request.method == 'DELETE':
-    #     db.session.delete(ingredient)
-    #     db.session.commit()
-    #     return {"message": f"Product {product.name} successfully deleted."}
 
-
-# ----------------------------------------------- #
 # USER 
-
-
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -340,19 +282,7 @@ def users():
                 try:
                     user = User(id_token, username, first_name, last_name, email, image_url) # Creates a new record
                     db.session.add(user) # Adds the record for committing
-                    db.session.commit() # Saves our changes
-
-            #     response = {
-            #         "id": user.id,
-            #         "id_token": user.id_token, 
-            #         "username": user.username, 
-            #         "first_name": user.first_name,
-            #         "last_name": user.last_name, 
-            #         "email": user.email, 
-            #         "image_url": user.image_url
-            #     }
-
-            # return {"user": response}
+                    db.session.commit() # Saves our change
 
                     return jsonify({
                                     "id": user.id, 
